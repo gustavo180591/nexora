@@ -14,7 +14,9 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  sessions  Session[]   // 👈 ESTO FALTABA
+  sessions  Session[]
+  orders    Order[]
+  seller    Seller?
 }
 
 model Session {
@@ -32,4 +34,78 @@ enum Role {
   ADMIN
   SELLER
   BUYER
+}
+
+model Order {
+  id               String        @id @default(cuid())
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  sellerId         String?
+  seller           Seller?       @relation(fields: [sellerId], references: [id])
+  status           OrderStatus   @default(PENDING)
+  currency         String
+  subtotalAmount   Int
+  totalAmount      Int
+  stripeSessionId  String?       @unique
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  payments         Payment[]
+
+  @@index([userId])
+  @@index([sellerId])
+}
+
+model Payment {
+  id                    String         @id @default(cuid())
+  orderId               String
+  order                 Order          @relation(fields: [orderId], references: [id])
+  provider              PaymentProvider @default(STRIPE)
+  status                PaymentStatus   @default(PENDING)
+  amount                Int
+  currency              String
+  stripePaymentIntentId String?         @unique
+  stripeChargeId        String?         @unique
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@index([orderId])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELED
+}
+
+enum PaymentProvider {
+  STRIPE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELED
+}
+
+model WebhookEvent {
+  id        String   @id @default(cuid())
+  type      String
+  payload   Json     // 🔥 guardar todo el evento
+  processed Boolean  @default(false)
+  error     String?  // 🔥 guardar errores
+  createdAt DateTime @default(now())
+}
+
+model Seller {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id])
+  stripeAccountId    String?  @unique
+  onboardingComplete Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  
+  orders             Order[]
 }
