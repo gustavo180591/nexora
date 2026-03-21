@@ -2,8 +2,9 @@ import { json } from '@sveltejs/kit';
 import { prisma } from '$lib/server/db';
 import { requireUser } from '$lib/server/auth/guards';
 import { calculatePlatformFee, formatCurrency } from '$lib/server/billing/config';
+import type { LocalsParams } from '$lib/server/types';
 
-export async function GET({ locals }) {
+export async function GET({ locals }: LocalsParams) {
   const user = requireUser(locals);
 
   const seller = await prisma.seller.findUnique({

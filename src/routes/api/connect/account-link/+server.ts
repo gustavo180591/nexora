@@ -2,8 +2,9 @@ import { json } from '@sveltejs/kit';
 import { createAccountLink, getSellerByUserId } from '$lib/server/billing/connect.service';
 import { requireUser } from '$lib/server/auth/guards';
 import { error } from '@sveltejs/kit';
+import type { RequestWithLocalsParams } from '$lib/server/types';
 
-export async function POST({ request, locals }) {
+export async function POST({ request, locals }: RequestWithLocalsParams) {
   const user = requireUser(locals);
   const { accountId } = await request.json();
 

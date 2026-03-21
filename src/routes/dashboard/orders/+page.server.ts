@@ -10,13 +10,5 @@ export async function load({ locals }: LocalsParams) {
     orderBy: { createdAt: 'desc' }
   });
 
-  const totalRevenue = orders
-    .filter(o => o.status === 'PAID')
-    .reduce((sum, o) => sum + o.totalAmount, 0);
-
-  return {
-    user,
-    orders,
-    totalRevenue
-  };
+  return { orders };
 }

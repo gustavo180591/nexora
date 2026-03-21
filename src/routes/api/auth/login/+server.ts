@@ -2,8 +2,9 @@ import { json } from '@sveltejs/kit';
 import { loginSchema } from '$lib/server/auth/auth.schema';
 import { loginUser } from '$lib/server/auth/auth.service';
 import { createSession, setSessionCookie } from '$lib/server/auth/session';
+import type { RequestParams } from '$lib/server/types';
 
-export async function POST({ request, cookies }) {
+export async function POST({ request, cookies }: RequestParams) {
   const raw = await request.json();
   const parsed = loginSchema.safeParse(raw);
 

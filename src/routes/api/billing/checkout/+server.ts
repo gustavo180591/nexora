@@ -1,8 +1,9 @@
 import { json } from '@sveltejs/kit';
 import { createCheckoutSession } from '$lib/server/billing/billing.service';
 import { requireUser } from '$lib/server/auth/guards';
+import type { RequestWithLocalsParams } from '$lib/server/types';
 
-export async function POST({ request, locals }) {
+export async function POST({ request, locals }: RequestWithLocalsParams) {
   const user = requireUser(locals);
   const body = await request.json();
 

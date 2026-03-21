@@ -1,8 +1,9 @@
 import { stripe } from '$lib/server/stripe';
 import { prisma } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
+import type { RequestParams } from '$lib/server/types';
 
-export async function POST({ request }) {
+export async function POST({ request }: RequestParams) {
   const signature = request.headers.get('stripe-signature');
 
   if (!signature) {
@@ -39,7 +40,7 @@ export async function POST({ request }) {
     create: {
       id: event.id,
       type: event.type,
-      payload: event
+      payload: event as any // 🔥 Convertir a JSON serializable
     }
   });
 
