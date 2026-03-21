@@ -1,6 +1,7 @@
 import { stripe } from '$lib/server/stripe';
 import { prisma } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
+import { formatMoney } from '$lib/utils/money';
 import type { RequestParams } from '$lib/server/types';
 
 export async function POST({ request }: RequestParams) {
@@ -73,6 +74,16 @@ export async function POST({ request }: RequestParams) {
                   : null
             }
           });
+
+          // 🔥 NOTIFICACIÓN AL SELLER
+          if (order.sellerId) {
+            await prisma.notification.create({
+              data: {
+                userId: order.userId,
+                message: `💰 New payment received: ${formatMoney(order.totalAmount)}`
+              }
+            });
+          }
         }
       }
     }
